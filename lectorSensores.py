@@ -8,7 +8,7 @@ import board
 import smtplib
 import adafruit_tsl2561
 import busio
-import config
+import config_public
 import csv
 import os
 import requests
@@ -28,15 +28,15 @@ class LectorSensores():
 
             
             Interruptor.apagar(21)
-            time.sleep(config.tiempoEntrePruebas*60)
+            time.sleep(config_public.tiempoEntrePruebas*60)
         
     def correo(mensaje):
         try:
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()
-            server.login(config.fromaddr, config.password)
+            server.login(config_public.fromaddr, config_public.password)
             mensaje = mensaje
-            server.sendmail(config.fromaddr, config.toaddr,mensaje)
+            server.sendmail(config_public.fromaddr, config_public.toaddr,mensaje)
             server.quit()
         except:
             pass
@@ -98,16 +98,16 @@ class Csv():
                 
     def prepCsv(self, d):        
         data = (time.strftime("%m/%d/%y"), time.strftime("%H:%M"), d['temperatura'], d['humedad'], d['lux'])
-        f = open(config.archivoCSV, 'a')
+        f = open(config_public.archivoCSV, 'a')
         writer = csv.writer(f)
         writer.writerow(data)
         f.close()        
         
     def header(self):
         header = ["Date","Time","Temperature","Humidity","Lux"]
-        f = open(config.archivoCSV, 'a')
+        f = open(config_public.archivoCSV, 'a')
         writer = csv.writer(f)
-        if os.stat(config.archivoCSV).st_size == 0:
+        if os.stat(config_public.archivoCSV).st_size == 0:
             writer.writerow(header)
         f.close()
         
@@ -121,19 +121,19 @@ class Thingspeak():
         self.loadHumi(d)
         
     def loadTemp(self, d):
-        loadTemp = "https://api.thingspeak.com/update?api_key="+config.ThingspeakKey+"&field2="
+        loadTemp = "https://api.thingspeak.com/update?api_key="+config_public.ThingspeakKey+"&field2="
         f = urllib.request.urlopen(loadTemp + str(d['temperatura']))
         f.read()
         f.close()
         
     def loadHumi(self, d):
-        loadHumi = "https://api.thingspeak.com/update?api_key="+config.ThingspeakKey+"&field3="
+        loadHumi = "https://api.thingspeak.com/update?api_key="+config_public.ThingspeakKey+"&field3="
         f = urllib.request.urlopen(loadHumi + str(d['humedad']))
         f.read()
         f.close()
         
     def loadLux(self, d):
-        loadLux = "https://api.thingspeak.com/update?api_key="+config.ThingspeakKey+"&field1="
+        loadLux = "https://api.thingspeak.com/update?api_key="+config_public.ThingspeakKey+"&field1="
         f = urllib.request.urlopen(loadLux + str(d['lux']))
         f.read()
         f.close()
